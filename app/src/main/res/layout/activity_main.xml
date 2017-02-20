@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/activity_main"
     android:layout_width="match_parent"
@@ -8,6 +9,49 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.alexhornick.simon.MainActivity">
+    tools:context="com.alexhornick.simon.MainActivity"
+    android:background="@android:color/background_dark">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/simonlogo"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="63dp"
+        android:id="@+id/imageView" />
+
+    <Button
+        android:text="Play"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/imageView"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="129dp"
+        android:id="@+id/play_button"
+        android:elevation="0dp"
+        android:background="@android:color/holo_green_light" />
+
+    <Button
+        android:text="About"
+        android:layout_width="150dp"
+        android:layout_marginTop="19dp"
+        android:id="@+id/about_button"
+        android:elevation="0dp"
+        android:background="@android:color/holo_green_light"
+        android:layout_below="@+id/play_button"
+        android:layout_alignStart="@+id/play_button"
+        android:layout_height="wrap_content" />
+
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="150dp"
+        android:layout_height="wrap_content"
+        android:drawSelectorOnTop="true"
+        android:entries="@array/version"
+        android:layout_marginTop="59dp"
+        android:background="@android:color/holo_green_light"
+        android:layout_below="@+id/imageView"
+        android:layout_alignStart="@+id/play_button"
+        android:textAlignment="center" />
 </RelativeLayout>
