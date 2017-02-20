@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">Simon</string>
+    <string-array name="version">
+        <item>Version 1</item>
+        <item>Version 2</item>
+        <item>Version 3</item>
+    </string-array>
 </resources>
