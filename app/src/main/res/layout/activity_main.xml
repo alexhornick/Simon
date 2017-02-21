@@ -53,5 +53,6 @@
         android:background="@android:color/holo_green_light"
         android:layout_below="@+id/imageView"
         android:layout_alignStart="@+id/play_button"
-        android:textAlignment="center" />
+        android:textAlignment="center"
+        android:spinnerMode="dialog" />
 </RelativeLayout>

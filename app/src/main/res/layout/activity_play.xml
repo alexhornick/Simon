@@ -14,10 +14,18 @@
 
     <ImageView
         android:layout_width="150dp"
+        android:layout_height="140dp"
+        app:srcCompat="@drawable/green"
+        android:id="@+id/simon3"
+        android:layout_alignTop="@+id/simon4"
+        android:layout_alignParentStart="true" />
+
+    <ImageView
+        android:layout_width="150dp"
         android:layout_height="150dp"
         app:srcCompat="@drawable/blue"
         android:id="@+id/simon1"
-        android:layout_alignBottom="@+id/simon2"
+        android:layout_alignTop="@+id/simon2"
         android:layout_alignParentStart="true" />
 
     <ImageView
@@ -25,24 +33,32 @@
         android:layout_height="150dp"
         app:srcCompat="@drawable/red"
         android:id="@+id/simon2"
-        android:layout_alignParentTop="true"
-        android:layout_toEndOf="@+id/simon3"
-        android:layout_marginStart="14dp" />
-
-    <ImageView
-        android:layout_width="150dp"
-        android:layout_height="140dp"
-        app:srcCompat="@drawable/green"
-        android:layout_marginTop="16dp"
-        android:id="@+id/simon3"
-        android:layout_below="@+id/simon1"
-        android:layout_alignParentStart="true" />
+        android:layout_marginBottom="44dp"
+        android:layout_above="@+id/simon3"
+        android:layout_alignParentEnd="true" />
 
     <ImageView
         android:layout_width="140dp"
         android:layout_height="140dp"
         app:srcCompat="@drawable/yellow"
         android:id="@+id/simon4"
-        android:layout_alignTop="@+id/simon3"
-        android:layout_alignStart="@+id/simon2" />
+        android:layout_marginBottom="63dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true" />
+
+    <Button
+        android:text="Play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/simon4"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/start_button" />
+
+    <TextView
+        android:text="0"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:id="@+id/score"
+        android:textColor="#ffffff" />
 </RelativeLayout>
