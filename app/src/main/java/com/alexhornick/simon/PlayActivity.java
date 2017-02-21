@@ -2,7 +2,11 @@ package com.alexhornick.simon;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.media.AudioAttributes;
+import android.media.AudioManager;
+import android.media.SoundPool;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.v7.app.AlertDialog;
@@ -14,6 +18,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Future;
 
@@ -21,26 +27,24 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     enum VERSION{REPEAT,MULTI,VERSUS}
     enum STATE{WATCHING,PLAYING,BEFORE}
-
     VERSION version=VERSION.REPEAT;
     STATE gameState=STATE.BEFORE;
 
     private boolean player=false;
     int numOn=0;
-
     int score=0;
-
     Sequencer mysequence;
-
     private int buttonIds[]={R.id.simon1,R.id.simon2,R.id.simon3,R.id.simon4};
-
     playButton Task;
-
+    private SoundPool soundPool;
+    private Set<Integer> soundsLoaded;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
+
+        soundsLoaded = new HashSet<Integer>();
 
         Intent intent=getIntent();
         if(intent.hasExtra("version")){
@@ -71,12 +75,61 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     int time=0;
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        //IF API >= 21, use SoundPool Builder
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            soundPool = new SoundPool.Builder()
+                    .setMaxStreams(10)
+                    .build();
+        }
+
+        //ELSE IF API < 21, Use deprecated SoundPool Constructor
+        else
+            soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 1);
+
+
+        soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
+            @Override
+            public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
+                if (status == 0) {
+                    soundsLoaded.add(sampleId);
+                    Log.i("SOUND", "Sound loaded " + sampleId);
+                } else {
+                    Log.i("SOUND", "Error cannot load sound status = " + status);
+                }
+            }
+        });
+
+        //LOAD 4 NOTES
+        final int note1 = soundPool.load(this, R.raw.A4, 1);
+        final int note2 = soundPool.load(this, R.raw.Csharp4, 1);
+        final int note3 = soundPool.load(this, R.raw.E4, 1);
+        final int note4 = soundPool.load(this, R.raw.G4, 1);
+
+    }
+
+    @Override
     protected void onPause() {
         super.onPause();
         Log.i("onStop","------OnPause");
         if(Task!=null)
             Task.cancel(true);
 
+        if (soundPool != null)
+        {
+            soundPool.release();
+            soundPool = null;
+            soundsLoaded.clear();
+        }
+
+    }
+
+    private void playSound(int soundId) {
+        if (soundsLoaded.contains(soundId)) {
+            soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
+        }
     }
 
     @Override
