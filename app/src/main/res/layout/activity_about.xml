@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/activity_about"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.alexhornick.simon.AboutActivity"
+    android:background="@android:color/black">
+
+    <TextView
+        android:text="Developers: Thomas Bau and Alex Hornick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:id="@+id/textView3"
+        android:textColor="@android:color/background_light" />
+
+    <TextView
+        android:text="Logo and Simon Buttons Made by Alex Hornick with logomakr.com - Logo Maker"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/textView4"
+        android:textColor="@android:color/background_light"
+        android:layout_above="@+id/textView3"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="10dp" />
+
+    <TextView
+        android:text="This Simon game comes with 3 versions of the game. The first version, you simply repeat the pattern Simon follows. The second version will slowly speed up how fast Simon does the patterns. The last version will have multiple repeats of each button and it's up to you to keep track. Enjoy the game!"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="42dp"
+        android:id="@+id/textView2"
+        android:textColor="@android:color/background_light"
+        android:textSize="18sp"
+        android:textAlignment="textStart"
+        android:layout_below="@+id/imageView2"
+        android:layout_alignParentStart="true"
+        android:fontFamily="sans-serif" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/simonlogo"
+        android:id="@+id/imageView2"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp" />
+</RelativeLayout>

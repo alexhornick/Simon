@@ -2,6 +2,7 @@ package com.alexhornick.simon;
 
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.AsyncTask;
@@ -332,7 +333,24 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
 
         if(values[0]==0){
         ImageView im = (ImageView) findViewById(buttonIds[values[1]-1]);
-        im.setColorFilter(0xffffffff);
+            switch(buttonIds[values[1]-1])
+            {
+                case R.id.simon1:
+                    im.setColorFilter(Color.CYAN); //Cyan for blue button
+                    break;
+                case R.id.simon2:
+                    im.setColorFilter(Color.rgb(255, 102, 102)); //red
+                    break;
+                case R.id.simon4:
+                    im.setColorFilter(Color.rgb(255, 255, 2014)); //yellow
+                    break;
+                case R.id.simon3:
+                    im.setColorFilter(Color.rgb(123, 255, 159)); //green
+                    break;
+                default:
+                    im.setColorFilter(0xffffffff);
+                    break;
+            }
 
             Log.i("Number", "-----In set color");
         switch (values[1]) {
