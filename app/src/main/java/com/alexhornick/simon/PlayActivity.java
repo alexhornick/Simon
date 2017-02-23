@@ -2,13 +2,11 @@ package com.alexhornick.simon;
 
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -20,8 +18,7 @@ import android.widget.Toast;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Future;
+
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener{
 
@@ -36,15 +33,21 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     Sequencer mysequence;
     private int buttonIds[]={R.id.simon1,R.id.simon2,R.id.simon3,R.id.simon4};
     playButton Task;
+    playButton buttonTask;
     private SoundPool soundPool;
     private Set<Integer> soundsLoaded;
+    private int[] notes;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        if(soundsLoaded==null)
         soundsLoaded = new HashSet<Integer>();
+
+        if(notes==null)
+            notes = new int[4];
 
         Intent intent=getIntent();
         if(intent.hasExtra("version")){
@@ -81,7 +84,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         //IF API >= 21, use SoundPool Builder
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             soundPool = new SoundPool.Builder()
-                    .setMaxStreams(10)
+                    .setMaxStreams(1)
                     .build();
         }
 
@@ -102,11 +105,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        //LOAD 4 NOTES
-        final int note1 = soundPool.load(this, R.raw.A4, 1);
-        final int note2 = soundPool.load(this, R.raw.Csharp4, 1);
-        final int note3 = soundPool.load(this, R.raw.E4, 1);
-        final int note4 = soundPool.load(this, R.raw.G4, 1);
+        notes[0]= soundPool.load(this, R.raw.a4, 1);
+        notes[1] = soundPool.load(this, R.raw.csharp4, 1);
+        notes[2] = soundPool.load(this, R.raw.e4, 1);
+        notes[3] = soundPool.load(this, R.raw.g4, 1);
 
     }
 
@@ -116,6 +118,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         Log.i("onStop","------OnPause");
         if(Task!=null)
             Task.cancel(true);
+        if(buttonTask!=null)
+            buttonTask.cancel(true);
 
         if (soundPool != null)
         {
@@ -148,6 +152,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         else if(gameState==STATE.PLAYING&&!(v.getId()==R.id.start_button)) {
             ImageView im = (ImageView) v;
 
+            int temp=0;
+            if (im.getId() == R.id.simon1)
+                temp=1;
+            if (im.getId() == R.id.simon2)
+                temp=2;
+            if (im.getId() == R.id.simon3)
+                temp=3;
+            if (im.getId() == R.id.simon4)
+                temp=4;
+
             Log.i("Number","-----"+numOn+" "+mysequence.pattern.size());
             if(numOn>mysequence.pattern.size()-1) {
                 gameState = STATE.BEFORE;
@@ -155,35 +169,52 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 TextView tv = (TextView) findViewById(R.id.score);
                 tv.setText(String.valueOf(score));
 
+                buttonTask = new playButton(temp);
+                buttonTask.execute();
+
                 startGame();
             }
             else if (im.getId() == R.id.simon1) {
+                buttonTask = new playButton(temp);
+                buttonTask.execute();
             if(mysequence.pattern.get(numOn-1)==1)
                 numOn++;
             else
                 restart();
 
             } else if (im.getId() == R.id.simon2) {
+                buttonTask = new playButton(temp);
+                buttonTask.execute();
                 if(mysequence.pattern.get(numOn-1)==2)
                     numOn++;
                 else
                     restart();
             } else if (im.getId() == R.id.simon3) {
+                buttonTask = new playButton(temp);
+                buttonTask.execute();
                 if(mysequence.pattern.get(numOn-1)==3)
                     numOn++;
                 else
                     restart();
             } else if (im.getId() == R.id.simon4) {
+                buttonTask = new playButton(temp);
+                buttonTask.execute();
                 if(mysequence.pattern.get(numOn-1)==4)
                     numOn++;
                 else
                     restart();
             }
+
         }
     }
 public void startGame(){
 
-    Task = new playButton();
+    soundPool.stop(notes[0]);
+    soundPool.stop(notes[1]);
+    soundPool.stop(notes[2]);
+    soundPool.stop(notes[3]);
+
+    Task = new playButton(0);
     Task.execute();
 
 }
@@ -211,7 +242,10 @@ public void restart(){
 
 }
 public class playButton extends AsyncTask<Void,Integer,Void>{
-
+    int type;
+    public playButton(int type1){
+        type=type1;
+    }
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
@@ -219,30 +253,61 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
 
     @Override
     protected Void doInBackground(Void... params) {
-        gameState=STATE.WATCHING;
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+       if(type==0) {
+           gameState = STATE.WATCHING;
 
-        numOn=1;
+           try {
+               Thread.sleep(1000);
+           } catch (InterruptedException e) {
+               e.printStackTrace();
+           }
 
-        int temp1 = mysequence.nextPattern();
-        while(mysequence.pattern.size() >= 1 && temp1 == mysequence.pattern.get(mysequence.pattern.size()-1) )
-            temp1 = mysequence.nextPattern();
+           numOn = 1;
 
-        mysequence.pattern.add(temp1);
+           if(version==VERSION.REPEAT) {
+               int temp1 = mysequence.nextPattern();
+               while (mysequence.pattern.size() >= 1 && temp1 == mysequence.pattern.get(mysequence.pattern.size() - 1))
+                   temp1 = mysequence.nextPattern();
 
-        time=0;
+               mysequence.pattern.add(temp1);
+           }
+           else if(version==VERSION.MULTI){
+               int j = mysequence.nextPattern();
+               int temp1 = mysequence.nextPattern();
+               for(int i=0;i<j;i++) {
+                   mysequence.pattern.add(temp1);
+               }
+           }
+           time = 0;
 
-        for(int i=0;i<mysequence.pattern.size();i++){
+           for (int i = 0; i < mysequence.pattern.size(); i++) {
 
-            final int temp = mysequence.pattern.get(i);
-            //Toast.makeText(getApplicationContext(),temp+" ",Toast.LENGTH_SHORT).show();
+               final int temp = mysequence.pattern.get(i);
+               //Toast.makeText(getApplicationContext(),temp+" ",Toast.LENGTH_SHORT).show();
 
-           publishProgress(0,temp);
+               publishProgress(0, temp);
+
+               try {
+                   Thread.sleep(500);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }
+
+               if (isCancelled())
+                   break;
+
+
+               publishProgress(1, temp);
+
+
+           }
+           gameState = STATE.PLAYING;
+       }
+       else{
+        for(int i=0;i<1;i++) {
+            int temp = type;
+            publishProgress(0, temp);
 
             try {
                 Thread.sleep(500);
@@ -250,27 +315,44 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                 e.printStackTrace();
             }
 
-            if(isCancelled())
-                break;
-
-            Log.i("Number","-----In thread");
-            publishProgress(1,temp);
-
-
+            publishProgress(1, temp);
         }
-        gameState=STATE.PLAYING;
+       }
         return null;
-
     }
 
     @Override
     protected void onProgressUpdate(Integer... values) {
-    if(values[0]==0){
+
+        soundPool.stop(notes[0]);
+        soundPool.stop(notes[1]);
+        soundPool.stop(notes[2]);
+        soundPool.stop(notes[3]);
+
+
+        if(values[0]==0){
         ImageView im = (ImageView) findViewById(buttonIds[values[1]-1]);
         im.setColorFilter(0xffffffff);
-        Log.i("hi","running");
+
+            Log.i("Number", "-----In set color");
+        switch (values[1]) {
+            case 1:
+                playSound(notes[0]);
+                break;
+            case 2:
+                playSound(notes[1]);
+                break;
+            case 3:
+                playSound(notes[2]);
+                break;
+            case 4:
+                playSound(notes[3]);
+                break;
+        }
     }
     else if(values[0]==1){
+
+            Log.i("Number", "-----In unset color");
         ImageView im = (ImageView) findViewById(buttonIds[values[1]-1]);
         im.setColorFilter(0x00000000);
     }
