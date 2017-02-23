@@ -29,9 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             intent.putExtra("version",itemSelected);
             startActivity(intent);
         }
-
     }
-
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
         itemSelected=position;
