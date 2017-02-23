@@ -31,7 +31,7 @@ import java.util.Set;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener{
 
-    enum VERSION{REPEAT,MULTI,VERSUS}
+    enum VERSION{REPEAT,MULTI,SPEED}
     enum STATE{WATCHING,PLAYING,BEFORE}
     VERSION version=VERSION.REPEAT;
     STATE gameState=STATE.BEFORE;
@@ -39,7 +39,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private boolean player=false;
     int numOn=0;
     int score=0;
-    int highScore = 0;
+    int highScore[] = {0,0,0};
     Sequencer mysequence;
     private int buttonIds[]={R.id.simon1,R.id.simon2,R.id.simon3,R.id.simon4};
     playButton Task;
@@ -69,7 +69,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 version=VERSION.MULTI;
             }
             else{
-                version=VERSION.VERSUS;
+                version=VERSION.SPEED;
             }
             Toast.makeText(this,"Version "+version.toString(),Toast.LENGTH_SHORT).show();
         }
@@ -176,7 +176,12 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             Log.i("Number","-----"+numOn+" "+mysequence.pattern.size());
             if(numOn>mysequence.pattern.size()-1) {
                 gameState = STATE.BEFORE;
-            score++;
+                score++;
+                time -= 10;
+                if(time < 200)
+                {
+                    time = 200;
+                }
                 TextView tv = (TextView) findViewById(R.id.score);
                 tv.setText(String.valueOf(score));
 
@@ -244,12 +249,32 @@ public void restart(){
     builder.show();
 
     mysequence.pattern.clear();
-    if(score > highScore)
-    {
-        writeToFile();
-        Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
-        TextView tv = (TextView) findViewById(R.id.high_score);
-        tv.setText("High Score: " + score);
+    if(version == VERSION.REPEAT) {
+        if (score > highScore[0]) {
+            score = highScore[0];
+            writeToFile();
+            Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
+            TextView tv = (TextView) findViewById(R.id.high_score);
+            tv.setText("High Score: " + score);
+        }
+    }
+    else if(version == VERSION.MULTI) {
+        if (score > highScore[1]) {
+            score = highScore[1];
+            writeToFile();
+            Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
+            TextView tv = (TextView) findViewById(R.id.high_score);
+            tv.setText("High Score: " + score);
+        }
+    }
+    else if(version == VERSION.SPEED) {
+        if (score > highScore[2]) {
+            score = highScore[2];
+            writeToFile();
+            Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
+            TextView tv = (TextView) findViewById(R.id.high_score);
+            tv.setText("High Score: " + score);
+        }
     }
     score=0;
     TextView tv = (TextView) findViewById(R.id.score);
@@ -263,12 +288,30 @@ public void restart(){
             FileInputStream fis = openFileInput("simon_highscore.txt");
             Scanner s = new Scanner(fis);
 
-            highScore = s.nextInt(); //get high score if it exists in file
-            TextView tv = (TextView) findViewById(R.id.high_score);
-            tv.setText("High Score: " + highScore);
+            highScore[0] = s.nextInt(); //Get high score for repeat
+            highScore[1] = s.nextInt(); //Get high score for multi
+            highScore[2] = s.nextInt(); //Get high score for speed
+
             s.close();
         } catch (FileNotFoundException e){
             Log.i("ReadData", "No input file found");
+        }
+
+        TextView tv = (TextView) findViewById(R.id.high_score);
+
+        switch (version)
+        {
+            case REPEAT:
+                tv.setText("High Score: " + highScore[0]);
+                break;
+            case MULTI:
+                tv.setText("High Score: " + highScore[1]);
+                break;
+            case SPEED:
+                tv.setText("High Score: " + highScore[2]);
+                break;
+            default:
+                break;
         }
     }
 
@@ -279,6 +322,9 @@ public void restart(){
             BufferedWriter bw = new BufferedWriter(osw);
             PrintWriter pw = new PrintWriter(bw);
 
+            pw.println(highScore[0]);
+            pw.println(highScore[1]);
+            pw.println(highScore[2]);
             pw.println(score); //write high score to file.
             pw.close();
         } catch (FileNotFoundException e){
@@ -304,7 +350,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
            gameState = STATE.WATCHING;
 
            try {
-               Thread.sleep(1000);
+               Thread.sleep(time);
            } catch (InterruptedException e) {
                e.printStackTrace();
            }
@@ -325,7 +371,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                    mysequence.pattern.add(temp1);
                }
            }
-           time = 0;
+           time = 500;
 
            for (int i = 0; i < mysequence.pattern.size(); i++) {
 
@@ -335,7 +381,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                publishProgress(0, temp);
 
                try {
-                   Thread.sleep(500);
+                   Thread.sleep(time);
                } catch (InterruptedException e) {
                    e.printStackTrace();
                }
@@ -356,7 +402,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
             publishProgress(0, temp);
 
             try {
-                Thread.sleep(500);
+                Thread.sleep(time);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
