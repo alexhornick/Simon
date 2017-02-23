@@ -1,7 +1,9 @@
 package com.alexhornick.simon;
 
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.graphics.Color;
 import android.media.AudioManager;
 import android.media.SoundPool;
 import android.os.AsyncTask;
@@ -16,7 +18,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.FileOutputStream;
+import java.io.BufferedWriter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.util.HashSet;
+import java.util.Scanner;
 import java.util.Set;
 
 
@@ -30,6 +39,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     private boolean player=false;
     int numOn=0;
     int score=0;
+    int highScore = 0;
     Sequencer mysequence;
     private int buttonIds[]={R.id.simon1,R.id.simon2,R.id.simon3,R.id.simon4};
     playButton Task;
@@ -73,6 +83,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         }
         Button b = (Button) findViewById(R.id.start_button);
         b.setOnClickListener(this);
+        getFile();
 
     }
     int time=0;
@@ -233,7 +244,13 @@ public void restart(){
     builder.show();
 
     mysequence.pattern.clear();
-
+    if(score > highScore)
+    {
+        writeToFile();
+        Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
+        TextView tv = (TextView) findViewById(R.id.high_score);
+        tv.setText("High Score: " + score);
+    }
     score=0;
     TextView tv = (TextView) findViewById(R.id.score);
     tv.setText(String.valueOf(score));
@@ -241,6 +258,35 @@ public void restart(){
     gameState=STATE.BEFORE;
 
 }
+    protected void getFile(){
+        try {
+            FileInputStream fis = openFileInput("simon_highscore.txt");
+            Scanner s = new Scanner(fis);
+
+            highScore = s.nextInt(); //get high score if it exists in file
+            TextView tv = (TextView) findViewById(R.id.high_score);
+            tv.setText("High Score: " + highScore);
+            s.close();
+        } catch (FileNotFoundException e){
+            Log.i("ReadData", "No input file found");
+        }
+    }
+
+    protected void writeToFile() {
+        try {
+            FileOutputStream fos = openFileOutput("simon_highscore.txt", Context.MODE_PRIVATE);
+            OutputStreamWriter osw = new OutputStreamWriter(fos);
+            BufferedWriter bw = new BufferedWriter(osw);
+            PrintWriter pw = new PrintWriter(bw);
+
+            pw.println(score); //write high score to file.
+            pw.close();
+        } catch (FileNotFoundException e){
+            e.printStackTrace();
+            Toast.makeText(this, "Unable to save high score", Toast.LENGTH_LONG).show();
+        }
+    }
+
 public class playButton extends AsyncTask<Void,Integer,Void>{
     int type;
     public playButton(int type1){
@@ -332,7 +378,24 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
 
         if(values[0]==0){
         ImageView im = (ImageView) findViewById(buttonIds[values[1]-1]);
-        im.setColorFilter(0xffffffff);
+            switch(buttonIds[values[1]-1])
+            {
+                case R.id.simon1:
+                    im.setColorFilter(Color.CYAN); //Cyan for blue button
+                    break;
+                case R.id.simon2:
+                    im.setColorFilter(Color.rgb(255, 102, 102)); //red
+                    break;
+                case R.id.simon4:
+                    im.setColorFilter(Color.rgb(255, 255, 2014)); //yellow
+                    break;
+                case R.id.simon3:
+                    im.setColorFilter(Color.rgb(123, 255, 159)); //green
+                    break;
+                default:
+                    im.setColorFilter(0xffffffff);
+                    break;
+            }
 
             Log.i("Number", "-----In set color");
         switch (values[1]) {

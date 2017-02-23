@@ -15,6 +15,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         findViewById(R.id.play_button).setOnClickListener(this);
+        findViewById(R.id.about_button).setOnClickListener(this);
 
         Spinner sp = (Spinner) findViewById(R.id.spinner);
         sp.setOnItemSelectedListener(this);
@@ -27,6 +28,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         if(v.getId()==R.id.play_button){
             Intent intent=new Intent(this,PlayActivity.class);
             intent.putExtra("version",itemSelected);
+            startActivity(intent);
+        }
+
+        else if(v.getId()==R.id.about_button){
+            Intent intent=new Intent(this,AboutActivity.class);
             startActivity(intent);
         }
     }
