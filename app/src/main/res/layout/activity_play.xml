@@ -52,7 +52,10 @@
         android:layout_height="wrap_content"
         android:layout_above="@+id/simon4"
         android:layout_centerHorizontal="true"
-        android:id="@+id/start_button" />
+        android:id="@+id/start_button"
+        android:fontFamily="serif-monospace"
+        android:textSize="24sp"
+        android:background="#66FF66" />
 
     <TextView
         android:text="0"
@@ -60,7 +63,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:id="@+id/score"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:textSize="18sp" />
 
     <TextView
         android:text="Current Score: "
@@ -70,7 +74,7 @@
         android:layout_toStartOf="@+id/score"
         android:layout_marginEnd="18dp"
         android:id="@+id/textView5"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:textColor="@android:color/background_light" />
 
     <TextView
