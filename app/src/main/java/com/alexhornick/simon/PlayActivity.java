@@ -53,37 +53,40 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_play);
 
+        //When soundsLoaded is empty, set it equal to a new HashSet of Integers containing the sound ids
         if(soundsLoaded==null)
         soundsLoaded = new HashSet<Integer>();
 
+        //notes contain the soundIds that can be used to play the sound
         if(notes==null)
             notes = new int[4];
 
         Intent intent=getIntent();
+        //Get version based on spinner from activity_main
         if(intent.hasExtra("version")){
             int temp=intent.getIntExtra("version",0);
             if(temp==0){
-                version=VERSION.REPEAT;
+                version=VERSION.REPEAT; //enum for Repeat Version
             }
             else if(temp==1){
-                version=VERSION.MULTI;
+                version=VERSION.MULTI; //enum for Multi Version
             }
             else{
-                version=VERSION.SPEED;
+                version=VERSION.SPEED; //enum for Speed version
             }
-            Toast.makeText(this,"Version "+version.toString(),Toast.LENGTH_SHORT).show();
+            Toast.makeText(this,"Version "+version.toString(),Toast.LENGTH_SHORT).show(); //display version selected to user
         }
         if(mysequence==null){
-            mysequence=new Sequencer();
+            mysequence=new Sequencer(); //sequencer controls the Simon pattern
         }
 
-        for(int ids:buttonIds){
+        for(int ids:buttonIds){ //Set each button to the onClickListener
             ImageView im = (ImageView) findViewById(ids);
             im.setOnClickListener(this);
         }
         Button b = (Button) findViewById(R.id.start_button);
         b.setOnClickListener(this);
-        getFile();
+        getFile(); //read file containing high scores
 
     }
     int time=500;
@@ -103,7 +106,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         else
             soundPool = new SoundPool(10, AudioManager.STREAM_MUSIC, 1);
 
-
+        //Load sounds
         soundPool.setOnLoadCompleteListener(new SoundPool.OnLoadCompleteListener() {
             @Override
             public void onLoadComplete(SoundPool soundPool, int sampleId, int status) {
@@ -116,6 +119,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
+        //Load sounds into notes array
         notes[0]= soundPool.load(this, R.raw.a4, 1);
         notes[1] = soundPool.load(this, R.raw.csharp4, 1);
         notes[2] = soundPool.load(this, R.raw.e4, 1);
@@ -134,14 +138,16 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         if (soundPool != null)
         {
-            soundPool.release();
+            soundPool.release(); //when paused, stop sounds
             soundPool = null;
             soundsLoaded.clear();
         }
 
     }
 
+    //accepts a soundId and plays that sound
     private void playSound(int soundId) {
+        //check if soundId is in the sounds loaded.
         if (soundsLoaded.contains(soundId)) {
             soundPool.play(soundId, 1.0f, 1.0f, 0, 0, 1.0f);
         }
@@ -157,7 +163,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
 
         if(v.getId()==R.id.start_button && gameState==STATE.BEFORE){
-            startGame();
+            startGame(); //starts game
 
             }
         else if(gameState==STATE.PLAYING&&!(v.getId()==R.id.start_button)) {
@@ -183,6 +189,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 {
                     time = 100;
                 }
+
                 TextView tv = (TextView) findViewById(R.id.score);
                 tv.setText(String.valueOf(score));
 
@@ -239,6 +246,8 @@ public void startGame(){
 public void restart(){
 
     time=500;
+
+    //create Dialog when user loses. They can click Ok to restart
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
     builder.setTitle("You lose");
@@ -251,7 +260,9 @@ public void restart(){
     });
     builder.show();
 
-    mysequence.pattern.clear();
+    mysequence.pattern.clear(); //clear the old pattern because the user lost.
+
+    //Depending on version, save the correct high score, and Toast if it's a new high score.
     if(version == VERSION.REPEAT) {
         if (score > highScore[0]) {
             highScore[0]=score;
@@ -279,13 +290,14 @@ public void restart(){
             tv.setText("High Score: " + highScore[2]);
         }
     }
-    score=0;
+    score=0; //reset score to 0
     TextView tv = (TextView) findViewById(R.id.score);
     tv.setText(String.valueOf(score));
 
-    gameState=STATE.BEFORE;
+    gameState=STATE.BEFORE; //change gameState
 
 }
+    //This function retrieves and reads the file that stores the high scores for each version
     protected void getFile(){
         try {
             FileInputStream fis = openFileInput("simon_highscore.txt");
@@ -318,6 +330,7 @@ public void restart(){
         }
     }
 
+    //Called when app stops. If there's a high score, it will save to a text file for the particular version the user is playing
     protected void writeToFile() {
         try {
             FileOutputStream fos = openFileOutput("simon_highscore.txt", Context.MODE_PRIVATE);
@@ -325,9 +338,9 @@ public void restart(){
             BufferedWriter bw = new BufferedWriter(osw);
             PrintWriter pw = new PrintWriter(bw);
 
-            pw.println(highScore[0]);
-            pw.println(highScore[1]);
-            pw.println(highScore[2]);
+            pw.println(highScore[0]); //Repeat version high score
+            pw.println(highScore[1]); //Multi version high score
+            pw.println(highScore[2]); //Speed high score
             pw.println(score); //write high score to file.
             pw.close();
         } catch (FileNotFoundException e){
@@ -336,8 +349,10 @@ public void restart(){
         }
     }
 
+    //PlayButton Class uses AsyncTask to manage the Simon patterns and sounds
 public class playButton extends AsyncTask<Void,Integer,Void>{
     int type;
+
     public playButton(int type1){
         type=type1;
     }
@@ -361,6 +376,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
            numOn = 1;
 
            if(version==VERSION.REPEAT) {
+               //get next pattern
                int temp1 = mysequence.nextPattern();
                while (mysequence.pattern.size() >= 1 && temp1 == mysequence.pattern.get(mysequence.pattern.size() - 1))
                    temp1 = mysequence.nextPattern();
@@ -371,8 +387,15 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                int j = mysequence.nextPattern();
                int temp1 = mysequence.nextPattern();
                for(int i=0;i<j;i++) {
-                   mysequence.pattern.add(temp1);
+                   mysequence.pattern.add(temp1); //Add multiples of the pattern selection
                }
+           }
+           else if(version == VERSION.SPEED) {
+               int temp1 = mysequence.nextPattern();
+               while (mysequence.pattern.size() >= 1 && temp1 == mysequence.pattern.get(mysequence.pattern.size() - 1))
+                   temp1 = mysequence.nextPattern();
+
+               mysequence.pattern.add(temp1);
            }
            if(version==VERSION.SPEED) {
                int temp1 = mysequence.nextPattern();
@@ -386,8 +409,8 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
            for (int i = 0; i < mysequence.pattern.size(); i++) {
 
                final int temp = mysequence.pattern.get(i);
-               //Toast.makeText(getApplicationContext(),temp+" ",Toast.LENGTH_SHORT).show();
 
+               //sends 0 and temp which holds the pattern values from 1 - 4
                publishProgress(0, temp);
 
                try {
@@ -399,7 +422,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                if (isCancelled())
                    break;
 
-
+               //Sends 1 and the pattern value to onProgressUpdate to unset the button color overlay
                publishProgress(1, temp);
 
 
@@ -412,6 +435,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
 
 
            }
+           //set game state to Playing
            gameState = STATE.PLAYING;
        }
        else{
@@ -435,14 +459,16 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
     @Override
     protected void onProgressUpdate(Integer... values) {
 
+        //Stop all 4 sounds from playing
         soundPool.stop(notes[0]);
         soundPool.stop(notes[1]);
         soundPool.stop(notes[2]);
         soundPool.stop(notes[3]);
 
-
+        //If first parameter is 0, set the color overlay
         if(values[0]==0){
         ImageView im = (ImageView) findViewById(buttonIds[values[1]-1]);
+            //set button color overlay when they are pressed
             switch(buttonIds[values[1]-1])
             {
                 case R.id.simon1:
@@ -458,11 +484,13 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                     im.setColorFilter(Color.rgb(123, 255, 159)); //green
                     break;
                 default:
-                    im.setColorFilter(0xffffffff);
+                    im.setColorFilter(0xffffffff); //default white overlay
                     break;
             }
 
             Log.i("Number", "-----In set color");
+
+            //Play correct sound depending on what image was clicked
         switch (values[1]) {
             case 1:
                 playSound(notes[0]);
@@ -478,11 +506,12 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                 break;
         }
     }
+        //when second parameter is 1, unset color overlay for button
     else if(values[0]==1){
 
             Log.i("Number", "-----In unset color");
         ImageView im = (ImageView) findViewById(buttonIds[values[1]-1]);
-        im.setColorFilter(0x00000000);
+        im.setColorFilter(0x00000000); //set color overlay to nothing to show original color
     }
     }
 
@@ -490,7 +519,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
     protected void onCancelled() {
         for(int i=0;i<4;i++){
         ImageView im = (ImageView) findViewById(buttonIds[i]);
-        im.setColorFilter(0x00000000);}
+        im.setColorFilter(0x00000000);} //for each image button, set color overlay to nothing
         Task=null;
         super.onCancelled();
     }
