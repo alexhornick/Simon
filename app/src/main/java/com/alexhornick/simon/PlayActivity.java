@@ -86,7 +86,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         getFile();
 
     }
-    int time=0;
+    int time=500;
 
     @Override
     protected void onResume() {
@@ -177,10 +177,11 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             if(numOn>mysequence.pattern.size()-1) {
                 gameState = STATE.BEFORE;
                 score++;
-                time -= 10;
-                if(time < 200)
+                if(version==VERSION.SPEED)
+                time -= 20;
+                if(time <= 100)
                 {
-                    time = 200;
+                    time = 100;
                 }
                 TextView tv = (TextView) findViewById(R.id.score);
                 tv.setText(String.valueOf(score));
@@ -236,6 +237,8 @@ public void startGame(){
 }
 
 public void restart(){
+
+    time=500;
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
 
     builder.setTitle("You lose");
@@ -251,29 +254,29 @@ public void restart(){
     mysequence.pattern.clear();
     if(version == VERSION.REPEAT) {
         if (score > highScore[0]) {
-            score = highScore[0];
+            highScore[0]=score;
             writeToFile();
             Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
             TextView tv = (TextView) findViewById(R.id.high_score);
-            tv.setText("High Score: " + score);
+            tv.setText("High Score: " + highScore[0]);
         }
     }
     else if(version == VERSION.MULTI) {
         if (score > highScore[1]) {
-            score = highScore[1];
+            highScore[1]=score;
             writeToFile();
             Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
             TextView tv = (TextView) findViewById(R.id.high_score);
-            tv.setText("High Score: " + score);
+            tv.setText("High Score: " + highScore[1]);
         }
     }
     else if(version == VERSION.SPEED) {
         if (score > highScore[2]) {
-            score = highScore[2];
+            highScore[2]=score;
             writeToFile();
             Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
             TextView tv = (TextView) findViewById(R.id.high_score);
-            tv.setText("High Score: " + score);
+            tv.setText("High Score: " + highScore[2]);
         }
     }
     score=0;
@@ -371,7 +374,14 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                    mysequence.pattern.add(temp1);
                }
            }
-           time = 500;
+           if(version==VERSION.SPEED) {
+               int temp1 = mysequence.nextPattern();
+               while (mysequence.pattern.size() >= 1 && temp1 == mysequence.pattern.get(mysequence.pattern.size() - 1))
+                   temp1 = mysequence.nextPattern();
+
+               mysequence.pattern.add(temp1);
+           }
+
 
            for (int i = 0; i < mysequence.pattern.size(); i++) {
 
@@ -393,6 +403,14 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                publishProgress(1, temp);
 
 
+               if(time<200){
+               try {
+                   Thread.sleep(300);
+               } catch (InterruptedException e) {
+                   e.printStackTrace();
+               }}
+
+
            }
            gameState = STATE.PLAYING;
        }
@@ -408,6 +426,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
             }
 
             publishProgress(1, temp);
+
         }
        }
         return null;
@@ -433,7 +452,7 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                     im.setColorFilter(Color.rgb(255, 102, 102)); //red
                     break;
                 case R.id.simon4:
-                    im.setColorFilter(Color.rgb(255, 255, 2014)); //yellow
+                    im.setColorFilter(Color.rgb(255, 255, 201)); //yellow
                     break;
                 case R.id.simon3:
                     im.setColorFilter(Color.rgb(123, 255, 159)); //green

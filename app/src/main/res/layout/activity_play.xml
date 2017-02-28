@@ -60,7 +60,8 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:id="@+id/score"
-        android:textColor="#ffffff" />
+        android:textColor="#ffffff"
+        android:textSize="18sp" />
 
     <TextView
         android:text="Current Score: "
@@ -70,7 +71,7 @@
         android:layout_toStartOf="@+id/score"
         android:layout_marginEnd="18dp"
         android:id="@+id/textView5"
-        android:textSize="14sp"
+        android:textSize="18sp"
         android:textColor="@android:color/background_light" />
 
     <TextView
@@ -80,7 +81,5 @@
         android:id="@+id/high_score"
         android:textColor="@android:color/background_light"
         android:textSize="18sp"
-        android:layout_alignBaseline="@+id/textView5"
-        android:layout_alignBottom="@+id/textView5"
         android:layout_alignParentStart="true" />
 </RelativeLayout>
