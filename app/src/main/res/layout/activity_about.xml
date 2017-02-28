@@ -32,7 +32,7 @@
         android:layout_marginBottom="10dp" />
 
     <TextView
-        android:text="This Simon game comes with 3 versions of the game. The first version, you simply repeat the pattern Simon follows. The second version will slowly speed up how fast Simon does the patterns. The last version will have multiple repeats of each button and it's up to you to keep track. Enjoy the game!"
+        android:text="This Simon game comes with 3 versions of the game. The first version, you simply repeat the pattern Simon follows. The last version will have multiple repeats of each button and it's up to you to keep track. The third version will slowly speed up how fast Simon does the patterns. Enjoy the game!"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="42dp"
