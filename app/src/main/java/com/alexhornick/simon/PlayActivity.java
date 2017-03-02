@@ -33,8 +33,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     enum VERSION{REPEAT,MULTI,SPEED}
     enum STATE{WATCHING,PLAYING,BEFORE}
+    enum TYPE{GAME,SIMON1,SIMON2,SIMON3,SIMON4}
     VERSION version=VERSION.REPEAT;
     STATE gameState=STATE.BEFORE;
+
 
     private boolean player=false;
     int numOn=0;
@@ -133,6 +135,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if(Task!=null)
             Task.cancel(true);
         if(buttonTask!=null)
+
             buttonTask.cancel(true);
 
         if (soundPool != null)
@@ -168,15 +171,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             ImageView im = (ImageView) v;
 
-            int temp=0;
+            TYPE temp=TYPE.GAME;
             if (im.getId() == R.id.simon1)
-                temp=1;
+                temp=TYPE.SIMON1;
             if (im.getId() == R.id.simon2)
-                temp=2;
+                temp=TYPE.SIMON2;
             if (im.getId() == R.id.simon3)
-                temp=3;
+                temp=TYPE.SIMON3;
             if (im.getId() == R.id.simon4)
-                temp=4;
+                temp=TYPE.SIMON4;
 
             Log.i("Number","-----"+numOn+" "+mysequence.pattern.size());
             if(numOn>mysequence.getSize()-1&&temp==mysequence.pattern.get(numOn-1)) {
@@ -237,12 +240,13 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         soundPool.stop(notes[2]);
         soundPool.stop(notes[3]);
 
-        Task = new playButton(0);
-        Task.execute();
+    Task = new playButton(TYPE.GAME);
+    Task.execute();
 
     }
 
     public void restart(){
+
 
         time=500;
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -252,7 +256,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-
             }
         });
         builder.show();
@@ -391,8 +394,8 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 public class playButton extends AsyncTask<Void,Integer,Void>{
     int type;
 
-    public playButton(int type1){
-        type=type1;
+    public playButton(TYPE type1){
+        type=type1.ordinal();
     }
     @Override
     protected void onPreExecute() {
@@ -504,10 +507,6 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
         @Override
         protected void onProgressUpdate(Integer... values) {
 
-            soundPool.stop(notes[0]);
-            soundPool.stop(notes[1]);
-            soundPool.stop(notes[2]);
-            soundPool.stop(notes[3]);
         //Stop all 4 sounds from playing
         soundPool.stop(notes[0]);
         soundPool.stop(notes[1]);
