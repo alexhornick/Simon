@@ -76,7 +76,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             else{
                 version=VERSION.SPEED; //enum for Speed version
             }
-            Toast.makeText(this,"Version "+version.toString(),Toast.LENGTH_SHORT).show(); //display version selected to user
+
         }
         if(mysequence==null){
             mysequence=new Sequencer(); //sequencer controls the Simon pattern
@@ -126,7 +126,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         notes[1] = soundPool.load(this, R.raw.csharp4, 1);
         notes[2] = soundPool.load(this, R.raw.e4, 1);
         notes[3] = soundPool.load(this, R.raw.g4, 1);
-
     }
 
     @Override
@@ -145,7 +144,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             soundPool = null;
             soundsLoaded.clear();
         }
-
     }
 
     //accepts a soundId and plays that sound
