@@ -61,5 +61,6 @@
         android:layout_marginTop="15dp"
         android:layout_below="@+id/spinner"
         android:layout_alignStart="@+id/spinner"
-        android:textAllCaps="false" />
+        android:textAllCaps="false"
+        android:typeface="monospace" />
 </RelativeLayout>
