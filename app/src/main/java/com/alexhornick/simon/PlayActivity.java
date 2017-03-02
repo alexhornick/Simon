@@ -31,9 +31,8 @@ import java.util.Set;
 
 public class PlayActivity extends AppCompatActivity implements View.OnClickListener{
 
-    enum VERSION{REPEAT,MULTI,SPEED}
-    enum STATE{WATCHING,PLAYING,BEFORE}
-    enum TYPE{GAME,SIMON1,SIMON2,SIMON3,SIMON4}
+    enum VERSION{REPEAT,MULTI,SPEED};
+    enum STATE{WATCHING,PLAYING,BEFORE};
     VERSION version=VERSION.REPEAT;
     STATE gameState=STATE.BEFORE;
 
@@ -57,7 +56,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         //When soundsLoaded is empty, set it equal to a new HashSet of Integers containing the sound ids
         if(soundsLoaded==null)
-        soundsLoaded = new HashSet<Integer>();
+            soundsLoaded = new HashSet<Integer>();
 
         //notes contain the soundIds that can be used to play the sound
         if(notes==null)
@@ -122,10 +121,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         });
 
         //Load sounds into notes array
-        notes[0]= soundPool.load(this, R.raw.a4, 1);
-        notes[1] = soundPool.load(this, R.raw.csharp4, 1);
-        notes[2] = soundPool.load(this, R.raw.e4, 1);
-        notes[3] = soundPool.load(this, R.raw.g4, 1);
+        notes[0]= soundPool.load(this, R.raw.pianoa4, 1);
+        notes[1] = soundPool.load(this, R.raw.pianocsharp, 1);
+        notes[2] = soundPool.load(this, R.raw.pianoe4, 1);
+        notes[3] = soundPool.load(this, R.raw.pianog4, 1);
     }
 
     @Override
@@ -168,24 +167,25 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
             }
         else if(gameState==STATE.PLAYING&&!(v.getId()==R.id.start_button)) {
+
             ImageView im = (ImageView) v;
 
-            TYPE temp=TYPE.GAME;
+            int temp=0;
             if (im.getId() == R.id.simon1)
-                temp=TYPE.SIMON1;
+                temp=1;
             if (im.getId() == R.id.simon2)
-                temp=TYPE.SIMON2;
+                temp=2;
             if (im.getId() == R.id.simon3)
-                temp=TYPE.SIMON3;
+                temp=3;
             if (im.getId() == R.id.simon4)
-                temp=TYPE.SIMON4;
+                temp=4;
 
             Log.i("Number","-----"+numOn+" "+mysequence.pattern.size());
-            if(numOn>mysequence.pattern.size()-1) {
+            if(numOn>mysequence.getSize()-1&&temp==mysequence.pattern.get(numOn-1)) {
                 gameState = STATE.BEFORE;
                 score++;
                 if(version==VERSION.SPEED)
-                time -= 20;
+                    time -= 20;
                 if(time <= 100)
                 {
                     time = 100;
@@ -202,10 +202,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             else if (im.getId() == R.id.simon1) {
                 buttonTask = new playButton(temp);
                 buttonTask.execute();
-            if(mysequence.pattern.get(numOn-1)==1)
-                numOn++;
-            else
-                restart();
+                if(mysequence.pattern.get(numOn-1)==1)
+                    numOn++;
+                else
+                    restart();
 
             } else if (im.getId() == R.id.simon2) {
                 buttonTask = new playButton(temp);
@@ -232,68 +232,73 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
         }
     }
-public void startGame(){
+    public void startGame(){
+        checkScore();
+        soundPool.stop(notes[0]);
+        soundPool.stop(notes[1]);
+        soundPool.stop(notes[2]);
+        soundPool.stop(notes[3]);
 
-    soundPool.stop(notes[0]);
-    soundPool.stop(notes[1]);
-    soundPool.stop(notes[2]);
-    soundPool.stop(notes[3]);
-
-    Task = new playButton(TYPE.GAME);
+    Task = new playButton(0);
     Task.execute();
 
-}
-
-public void restart(){
-
-    time=500;
-
-    //create Dialog when user loses. They can click Ok to restart
-    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-    builder.setTitle("You lose");
-    builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialog, int which) {
-
-        }
-    });
-    builder.show();
-
-    mysequence.pattern.clear(); //clear the old pattern because the user lost.
-
-    //Depending on version, save the correct high score, and Toast if it's a new high score.
-    if(version == VERSION.REPEAT) {
-        if (score > highScore[0]) {
-            highScore[0]=score;
-            writeToFile();
-            Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
-            TextView tv = (TextView) findViewById(R.id.high_score);
-            tv.setText("High Score: " + highScore[0]);
-        }
     }
-    else if(version == VERSION.MULTI) {
-        if (score > highScore[1]) {
-            highScore[1]=score;
-            writeToFile();
-            Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
-            TextView tv = (TextView) findViewById(R.id.high_score);
-            tv.setText("High Score: " + highScore[1]);
-        }
-    }
-    else if(version == VERSION.SPEED) {
-        if (score > highScore[2]) {
-            highScore[2]=score;
-            writeToFile();
-            Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
-            TextView tv = (TextView) findViewById(R.id.high_score);
-            tv.setText("High Score: " + highScore[2]);
-        }
-    }
-    score=0; //reset score to 0
-    TextView tv = (TextView) findViewById(R.id.score);
-    tv.setText(String.valueOf(score));
 
-    gameState=STATE.BEFORE; //change gameState
+    public void restart(){
+
+
+        time=500;
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+        builder.setTitle("Gameover");
+
+        builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        builder.show();
+
+        mysequence.pattern.clear();
+
+        checkScore();
+
+        score=0;
+        TextView tv = (TextView) findViewById(R.id.score);
+        tv.setText(String.valueOf(score));
+
+        gameState=STATE.BEFORE;
+
+    }
+    public void checkScore(){
+//Depending on version, save the correct high score, and Toast if it's a new high score.
+        if(version == VERSION.REPEAT) {
+            if (score > highScore[0]) {
+                highScore[0]=score;
+                writeToFile();
+                Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
+                TextView tv = (TextView) findViewById(R.id.high_score);
+                tv.setText("High Score: " + highScore[0]);
+            }
+        }
+        else if(version == VERSION.MULTI) {
+            if (score > highScore[1]) {
+                highScore[1]=score;
+                writeToFile();
+                Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
+                TextView tv = (TextView) findViewById(R.id.high_score);
+                tv.setText("High Score: " + highScore[1]);
+            }
+        }
+        else if(version == VERSION.SPEED) {
+            if (score > highScore[2]) {
+                highScore[2]=score;
+                writeToFile();
+                Toast.makeText(this, "New high score!", Toast.LENGTH_LONG).show();
+                TextView tv = (TextView) findViewById(R.id.high_score);
+                tv.setText("High Score: " + highScore[2]);
+            }
+        }
 
 }
     //This function retrieves and reads the file that stores the high scores for each version
@@ -352,27 +357,27 @@ public void restart(){
 public class playButton extends AsyncTask<Void,Integer,Void>{
     int type;
 
-    public playButton(TYPE type1){
-        type=type1.ordinal();
+    public playButton(int input){
+        type=input;
     }
     @Override
     protected void onPreExecute() {
         super.onPreExecute();
     }
 
-    @Override
-    protected Void doInBackground(Void... params) {
+        @Override
+        protected Void doInBackground(Void... params) {
 
-       if(type==0) {
-           gameState = STATE.WATCHING;
+            if(type==0) {
+                gameState = STATE.WATCHING;
 
-           try {
-               Thread.sleep(time);
-           } catch (InterruptedException e) {
-               e.printStackTrace();
-           }
+                try {
+                    Thread.sleep(time);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
-           numOn = 1;
+                numOn = 1;
 
            if(version==VERSION.REPEAT) {
                //get next pattern
@@ -401,37 +406,44 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
                while (mysequence.pattern.size() >= 1 && temp1 == mysequence.pattern.get(mysequence.pattern.size() - 1))
                    temp1 = mysequence.nextPattern();
 
-               mysequence.pattern.add(temp1);
-           }
+                    mysequence.pattern.add(temp1);
+                }
 
 
-           for (int i = 0; i < mysequence.pattern.size(); i++) {
+                for (int i = 0; i < mysequence.pattern.size(); i++) {
 
                final int temp = mysequence.pattern.get(i);
+               //Toast.makeText(getApplicationContext(),temp+" ",Toast.LENGTH_SHORT).show();
 
-               //sends 0 and temp which holds the pattern values from 1 - 4
-               publishProgress(0, temp);
+                    publishProgress(0, temp);
 
-               try {
-                   Thread.sleep(time);
-               } catch (InterruptedException e) {
-                   e.printStackTrace();
-               }
+                    try {
+                        Thread.sleep(time);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
-               if (isCancelled())
-                   break;
-
-               //Sends 1 and the pattern value to onProgressUpdate to unset the button color overlay
-               publishProgress(1, temp);
+                    if (isCancelled())
+                        break;
 
 
-               if(time<200){
-               try {
-                   Thread.sleep(300);
-               } catch (InterruptedException e) {
-                   e.printStackTrace();
-               }}
+                    publishProgress(1, temp);
 
+
+                    if(time<200){
+                        try {
+                            Thread.sleep(300);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }}
+
+                    if(version==VERSION.MULTI){
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
            }
            //set game state to Playing
@@ -442,21 +454,21 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
             int temp = type;
             publishProgress(0, temp);
 
-            try {
-                Thread.sleep(time);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+                    try {
+                        Thread.sleep(time);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    publishProgress(1, temp);
+
+                }
             }
-
-            publishProgress(1, temp);
-
+            return null;
         }
-       }
-        return null;
-    }
 
-    @Override
-    protected void onProgressUpdate(Integer... values) {
+        @Override
+        protected void onProgressUpdate(Integer... values) {
 
         //Stop all 4 sounds from playing
         soundPool.stop(notes[0]);
@@ -523,9 +535,9 @@ public class playButton extends AsyncTask<Void,Integer,Void>{
         super.onCancelled();
     }
 
-    @Override
-    protected void onPostExecute(Void aVoid) {
-        super.onPostExecute(aVoid);
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+        }
     }
-}
 }

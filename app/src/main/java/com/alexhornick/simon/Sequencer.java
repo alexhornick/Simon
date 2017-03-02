@@ -19,4 +19,7 @@ public class Sequencer {
     int nextPattern(){
     return rand.nextInt(4)+1;
     }
+    public int getSize(){
+        return pattern.size();
+    }
 }
