@@ -33,8 +33,10 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
 
     enum VERSION{REPEAT,MULTI,SPEED}
     enum STATE{WATCHING,PLAYING,BEFORE}
+    enum TYPE{GAME,SIMON1,SIMON2,SIMON3,SIMON4}
     VERSION version=VERSION.REPEAT;
     STATE gameState=STATE.BEFORE;
+
 
     private boolean player=false;
     int numOn=0;
@@ -134,6 +136,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         if(Task!=null)
             Task.cancel(true);
         if(buttonTask!=null)
+
             buttonTask.cancel(true);
 
         if (soundPool != null)
@@ -169,15 +172,15 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         else if(gameState==STATE.PLAYING&&!(v.getId()==R.id.start_button)) {
             ImageView im = (ImageView) v;
 
-            int temp=0;
+            TYPE temp=TYPE.GAME;
             if (im.getId() == R.id.simon1)
-                temp=1;
+                temp=TYPE.SIMON1;
             if (im.getId() == R.id.simon2)
-                temp=2;
+                temp=TYPE.SIMON2;
             if (im.getId() == R.id.simon3)
-                temp=3;
+                temp=TYPE.SIMON3;
             if (im.getId() == R.id.simon4)
-                temp=4;
+                temp=TYPE.SIMON4;
 
             Log.i("Number","-----"+numOn+" "+mysequence.pattern.size());
             if(numOn>mysequence.pattern.size()-1) {
@@ -238,7 +241,7 @@ public void startGame(){
     soundPool.stop(notes[2]);
     soundPool.stop(notes[3]);
 
-    Task = new playButton(0);
+    Task = new playButton(TYPE.GAME);
     Task.execute();
 
 }
@@ -249,9 +252,7 @@ public void restart(){
 
     //create Dialog when user loses. They can click Ok to restart
     AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
     builder.setTitle("You lose");
-
     builder.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialog, int which) {
@@ -353,8 +354,8 @@ public void restart(){
 public class playButton extends AsyncTask<Void,Integer,Void>{
     int type;
 
-    public playButton(int type1){
-        type=type1;
+    public playButton(TYPE type1){
+        type=type1.ordinal();
     }
     @Override
     protected void onPreExecute() {
