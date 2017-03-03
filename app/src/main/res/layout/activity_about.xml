@@ -12,53 +12,40 @@
     tools:context="com.alexhornick.simon.AboutActivity"
     android:background="@android:color/black">
 
-    <TextView
-        android:text="This Simon game comes with 3 versions of the game. The first version, you simply repeat the pattern Simon follows. The last version will have multiple repeats of each button and it's up to you to keep track. The third version will slowly speed up how fast Simon does the patterns. Enjoy the game!"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="42dp"
-        android:id="@+id/textView2"
-        android:textColor="@android:color/background_light"
-        android:textSize="18sp"
-        android:textAlignment="textStart"
-        android:layout_below="@+id/imageView2"
-        android:layout_alignParentStart="true"
-        android:fontFamily="monospace"
-        android:typeface="monospace" />
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/simonlogo"
-        android:id="@+id/imageView2"
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="20dp" />
+        android:layout_alignParentEnd="true">
 
-    <TextView
-        android:text="Piano sounds created by user Jobro on freesound.org under the Create Commons Attribution License. These audio files were not modified.                              "
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView4"
-        android:textColor="@android:color/background_light"
-        android:layout_above="@+id/textView"
-        android:layout_alignParentStart="true" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical" >
 
-    <TextView
-        android:text="Logo and Simon Buttons Made by Alex Hornick with logomakr.com - Logo Maker"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView"
-        android:textColor="@android:color/background_light"
-        android:layout_above="@+id/textView3"
-        android:layout_alignParentStart="true" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:srcCompat="@drawable/simonlogo"
+                android:id="@+id/imageView2"
+                android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:text="Developers: Thomas Bau and Alex Hornick"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/textView3"
-        android:textColor="@android:color/background_light"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentStart="true" />
+            <TextView
+                android:text="@string/about_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/textView2"
+                android:textColor="@android:color/background_light"
+                android:textSize="16sp"
+                android:textAlignment="textStart"
+                android:fontFamily="monospace"
+                android:typeface="serif"
+                android:layout_above="@+id/textView3"
+                android:layout_alignParentStart="true"
+                android:layout_below="@+id/imageView2"
+                android:paddingTop="20dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
 </RelativeLayout>

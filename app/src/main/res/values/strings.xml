@@ -5,4 +5,11 @@
         <item>Multi</item>
         <item>Speed</item>
     </string-array>
+    <string name="about_text">This Simon game comes with 3 versions of the game. The first version,
+        you simply repeat the pattern Simon follows. The last version will have multiple repeats of
+        each button and it\'s up to you to keep track. The third version will slowly speed up how fast
+        Simon does the patterns. Enjoy the game!\n\nPiano sounds created by user Jobro on freesound.org under
+        the Create Commons Attribution License. These audio files were not modified.
+        \n\nLogo and Simon Buttons Made by Alex Hornick with logomakr.com - Logo Maker
+       \n\nDevelopers: Thomas Bau and Alex Hornick</string>
 </resources>
