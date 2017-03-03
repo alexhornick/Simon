@@ -90,7 +90,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
         getFile(); //read file containing high scores
 
     }
-    int time=500;
+    int time=400;
 
     @Override
     protected void onResume() {
@@ -130,7 +130,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onPause() {
         super.onPause();
-        Log.i("onStop","------OnPause");
+        Log.i("onPause","------OnPause");
         if(Task!=null)
             Task.cancel(true);
         if(buttonTask!=null)
@@ -180,8 +180,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                 temp=3;
             if (im.getId() == R.id.simon4)
                 temp=4;
-
-            Log.i("Number","-----"+numOn+" "+mysequence.pattern.size());
 
             //Check if sequence size is less than numOn, and compare temp (what user clicked) to the pattern.
             if(numOn>mysequence.getSize()-1&&temp==mysequence.pattern.get(numOn-1)) {
@@ -251,7 +249,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     public void restart(){
 
         //reset time to 500
-        time=500;
+        time=400;
 
         //Create dialog box to show Gameover when the player makes a mistake
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
@@ -499,8 +497,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
                         break;
                 }
 
-                Log.i("Number", "-----In set color");
-
                 //Play correct sound depending on what image was clicked
                 switch (values[1]) {
                     case 1:
@@ -519,7 +515,6 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
             }
             //when second parameter is 1, unset color overlay for button
             else if(values[0]==1){
-                Log.i("Number", "-----In unset color");
                 ImageView im = (ImageView) findViewById(buttonIds[values[1]-1]);
                 im.setColorFilter(0x00000000); //set color overlay to nothing to show original color
             }
