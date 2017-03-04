@@ -156,6 +156,7 @@ public class PlayActivity extends AppCompatActivity implements View.OnClickListe
     @Override
     protected void onStop() {
         super.onStop();
+        checkScore();
         Log.i("onStop","------OnStop");
       }
 
